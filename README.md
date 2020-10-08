@@ -1,7 +1,7 @@
 # Bot Base
 
-[![CodeFactor](https://www.codefactor.io/repository/github/the-mighty-mo/botbase/badge)](https://www.codefactor.io/repository/github/the-mighty-mo/botbase)
-[![Build Status](https://hallb1016.visualstudio.com/FBIBot/_apis/build/status/the-mighty-mo.BotBase?branchName=master)](https://hallb1016.visualstudio.com/FBIBot/_build/latest?definitionId=10&branchName=master)
+[![CodeFactor](https://www.codefactor.io/repository/github/the-mighty-mo/countingbot/badge)](https://www.codefactor.io/repository/github/the-mighty-mo/countingbot)
+[![Build Status](https://hallb1016.visualstudio.com/FBIBot/_apis/build/status/the-mighty-mo.CountingBot?branchName=master)](https://hallb1016.visualstudio.com/FBIBot/_build/latest?definitionId=11&branchName=master)
 
 Bot Base - Version 1.0
 
