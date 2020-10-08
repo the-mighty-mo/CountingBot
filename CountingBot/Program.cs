@@ -90,7 +90,7 @@ namespace CountingBot
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }
-            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, count INTEGER NOT NULL);", cnCounting))
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, count INTEGER NOT NULL, last_num INTEGER NOT NULL);", cnCounting))
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }

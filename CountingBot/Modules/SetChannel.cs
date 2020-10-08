@@ -84,7 +84,7 @@ namespace CountingBot.Modules
 
         public static async Task SetCountingChannelAsync(SocketTextChannel channel)
         {
-            string update = "UPDATE Channels SET channel_id = @channel_id, count = 0 WHERE guild_id = @guild_id;";
+            string update = "UPDATE Channels SET channel_id = @channel_id WHERE guild_id = @guild_id;";
             string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 0 WHERE (SELECT Changes() = 0);";
 
             using (SqliteCommand cmd = new SqliteCommand(update + insert, Program.cnCounting))
@@ -109,8 +109,8 @@ namespace CountingBot.Modules
         {
             int count = 0;
 
-            string getChannel = "SELECT count FROM Channels WHERE guild_id = @guild_id;";
-            using (SqliteCommand cmd = new SqliteCommand(getChannel, Program.cnCounting))
+            string getCount = "SELECT count FROM Channels WHERE guild_id = @guild_id;";
+            using (SqliteCommand cmd = new SqliteCommand(getCount, Program.cnCounting))
             {
                 cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
@@ -123,6 +123,18 @@ namespace CountingBot.Modules
             }
 
             return count;
+        }
+
+        public static async Task IncrementCountAsync(SocketGuild g)
+        {
+            string update = "UPDATE Channels SET count = count + 1 WHERE guild_id = @guild_id;";
+            string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 1 WHERE (SELECT Changes() = 0);";
+
+            using (SqliteCommand cmd = new SqliteCommand(update + insert, Program.cnCounting))
+            {
+                cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
+                await cmd.ExecuteNonQueryAsync();
+            }
         }
     }
 }

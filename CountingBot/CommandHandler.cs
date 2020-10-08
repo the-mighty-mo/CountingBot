@@ -75,13 +75,15 @@ namespace CountingBot
             if (channel.Id == (await SetChannel.GetCountingChannelAsync(channel.Guild)).Id)
             {
                 int nextCount = await SetChannel.GetCountAsync(channel.Guild) + 1;
-                if (m.Content != nextCount.ToString())
+                int lastUserNum = await GetUserCount.GetLastUserNumAsync(user);
+                if (m.Content != nextCount.ToString() || lastUserNum + 1 == nextCount)
                 {
-                    await m.DeleteAsync();
+                    await msg.DeleteAsync();
                 }
                 else
                 {
-                    await GetUserCount.IncrementUserCountAsync(user);
+                    await GetUserCount.IncrementUserCountAsync(user, nextCount);
+                    await SetChannel.IncrementCountAsync(user.Guild);
                 } 
             }
         }
