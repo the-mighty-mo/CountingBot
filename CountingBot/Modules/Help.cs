@@ -29,7 +29,9 @@ namespace CountingBot.Modules
                     "getcount [user id (optional)]\n" +
                     "  - Gets the number of counting messages sent by the user and their rank on the leaderboard\n\n" +
                     "counter\n" +
-                    "  - Gets a leaderboard of the top 5 users"
+                    "  - Gets a leaderboard of the top 5 users\n\n" +
+                    "currentcount\n" +
+                    "  - Gets the current counter value"
                 );
             embed.AddField(field);
 
