@@ -2,6 +2,8 @@
 using Discord.Commands;
 using Discord.WebSocket;
 using Microsoft.Data.Sqlite;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace CountingBot.Modules
@@ -24,9 +26,13 @@ namespace CountingBot.Modules
         {
             int count = await GetUserCountAsync(user);
 
+            List<(SocketGuildUser user, int count)> userCounts = await GetAllUserCountsAsync(Context.Guild);
+            int userRank = 1 + userCounts.IndexOf((user, count));
+
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(SecurityInfo.botColor)
-                .WithDescription($"{user.Mention} has sent {count} messages in the counting channel");
+                .WithDescription($"{user.Mention} has sent {count} messages in the counting channel.\n" +
+                    $"Rank: {userRank}");
 
             await Context.Channel.SendMessageAsync(embed: embed.Build());
         }
@@ -35,8 +41,8 @@ namespace CountingBot.Modules
         {
             int count = 0;
 
-            string getChannel = "SELECT count FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
-            using (SqliteCommand cmd = new SqliteCommand(getChannel, Program.cnCounting))
+            string getUserCount = "SELECT count FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
+            using (SqliteCommand cmd = new SqliteCommand(getUserCount, Program.cnCounting))
             {
                 cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                 cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
@@ -52,12 +58,43 @@ namespace CountingBot.Modules
             return count;
         }
 
+        public static async Task<List<(SocketGuildUser user, int count)>> GetAllUserCountsAsync(SocketGuild g)
+        {
+            SortedSet<(SocketGuildUser user, int count)> userCounts =
+                new SortedSet<(SocketGuildUser user, int count)>
+                (
+                    Comparer<(SocketGuildUser user, int count)>.Create((x, y) => y.count.CompareTo(x.count))
+                );
+
+            string getUserCounts = "SELECT user_id, count FROM UserCounts WHERE guild_id = @guild_id;";
+            using (SqliteCommand cmd = new SqliteCommand(getUserCounts, Program.cnCounting))
+            {
+                cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
+
+                SqliteDataReader reader = await cmd.ExecuteReaderAsync();
+                while (await reader.ReadAsync())
+                {
+                    ulong.TryParse(reader["user_id"].ToString(), out ulong userId);
+                    int.TryParse(reader["count"].ToString(), out int count);
+
+                    SocketGuildUser user = g.GetUser(userId);
+                    if (user != null)
+                    {
+                        userCounts.Add((user, count));
+                    }
+                }
+                reader.Close();
+            }
+
+            return userCounts.ToList();
+        }
+
         public static async Task<int> GetLastUserNumAsync(SocketGuildUser u)
         {
             int num = -1;
 
-            string getChannel = "SELECT last_num FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
-            using (SqliteCommand cmd = new SqliteCommand(getChannel, Program.cnCounting))
+            string getUserNum = "SELECT last_num FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
+            using (SqliteCommand cmd = new SqliteCommand(getUserNum, Program.cnCounting))
             {
                 cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                 cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
