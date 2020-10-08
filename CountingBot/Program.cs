@@ -19,7 +19,7 @@ namespace CountingBot
 
         public static readonly Random rng = new Random();
 
-        public static readonly SqliteConnection cnChannels = new SqliteConnection("Filename=Channels.db");
+        public static readonly SqliteConnection cnCounting = new SqliteConnection("Filename=Counting.db");
 
         public static readonly bool isConsole = Console.OpenStandardInput(1) != Stream.Null;
 
@@ -83,10 +83,14 @@ namespace CountingBot
 
         static async Task InitChannelsSqlite()
         {
-            await cnChannels.OpenAsync();
+            await cnCounting.OpenAsync();
 
             List<Task> cmds = new List<Task>();
-            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL);", cnChannels))
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL, count INTEGER NOT NULL);", cnCounting))
+            {
+                cmds.Add(cmd.ExecuteNonQueryAsync());
+            }
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT PRIMARY KEY, user_id TEXT NOT NULL, count INTEGER NOT NULL);", cnCounting))
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }

@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using CountingBot.Modules;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
@@ -34,6 +35,7 @@ namespace CountingBot
             _client.Connected += SendConnectMessage;
             _client.Disconnected += SendDisconnectError;
             _client.MessageReceived += HandleCommandAsync;
+            _client.MessageReceived += HandleCountingAsync;
 
             await _commands.AddModulesAsync(Assembly.GetEntryAssembly(), _services);
             _commands.CommandExecuted += SendErrorAsync;
@@ -60,6 +62,27 @@ namespace CountingBot
             if (Program.isConsole)
             {
                 await Console.Out.WriteLineAsync(e.Message);
+            }
+        }
+
+        private async Task HandleCountingAsync(SocketMessage m)
+        {
+            if (!(m is SocketUserMessage msg) || !(msg.Channel is SocketTextChannel channel) || !(m.Author is SocketGuildUser user))
+            {
+                return;
+            }
+
+            if (channel.Id == (await SetChannel.GetCountingChannelAsync(channel.Guild)).Id)
+            {
+                int nextCount = await SetChannel.GetCountAsync(channel.Guild) + 1;
+                if (m.Content != nextCount.ToString())
+                {
+                    await m.DeleteAsync();
+                }
+                else
+                {
+                    await GetUserCount.IncrementUserCountAsync(user);
+                } 
             }
         }
 
