@@ -1,6 +1,6 @@
 ﻿using Discord;
 
-namespace BotBase
+namespace CountingBot
 {
     public static class SecurityInfo
     {
