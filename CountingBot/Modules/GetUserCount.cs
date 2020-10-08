@@ -60,11 +60,7 @@ namespace CountingBot.Modules
 
         public static async Task<List<(SocketGuildUser user, int count)>> GetAllUserCountsAsync(SocketGuild g)
         {
-            SortedSet<(SocketGuildUser user, int count)> userCounts =
-                new SortedSet<(SocketGuildUser user, int count)>
-                (
-                    Comparer<(SocketGuildUser user, int count)>.Create((x, y) => y.count.CompareTo(x.count))
-                );
+            List<(SocketGuildUser user, int count)> userCounts = new List<(SocketGuildUser user, int count)>();
 
             string getUserCounts = "SELECT user_id, count FROM UserCounts WHERE guild_id = @guild_id;";
             using (SqliteCommand cmd = new SqliteCommand(getUserCounts, Program.cnCounting))
@@ -86,7 +82,8 @@ namespace CountingBot.Modules
                 reader.Close();
             }
 
-            return userCounts.ToList();
+            userCounts.Sort(Comparer<(SocketGuildUser user, int count)>.Create((x, y) => y.count.CompareTo(x.count)));
+            return userCounts;
         }
 
         public static async Task<int> GetLastUserNumAsync(SocketGuildUser u)
