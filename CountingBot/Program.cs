@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BotBase
+namespace CountingBot
 {
     public class Program
     {
@@ -19,7 +19,7 @@ namespace BotBase
 
         public static readonly Random rng = new Random();
 
-        public static readonly SqliteConnection cnDatabase = new SqliteConnection("Filename=Database.db");
+        public static readonly SqliteConnection cnChannels = new SqliteConnection("Filename=Channels.db");
 
         public static readonly bool isConsole = Console.OpenStandardInput(1) != Stream.Null;
 
@@ -83,10 +83,10 @@ namespace BotBase
 
         static async Task InitChannelsSqlite()
         {
-            await cnDatabase.OpenAsync();
+            await cnChannels.OpenAsync();
 
             List<Task> cmds = new List<Task>();
-            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Database (guild_id TEXT PRIMARY KEY, data TEXT NOT NULL);", cnDatabase))
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL);", cnChannels))
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }

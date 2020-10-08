@@ -10,6 +10,7 @@
     <Product>Counting Bot</Product>
     <Description>Keeps track of a counting channel and who has said how many numbers</Description>
     <Copyright>Copyright © The Mighty Mi® 2020</Copyright>
+    <ApplicationIcon>CountingBot.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
