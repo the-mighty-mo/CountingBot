@@ -23,14 +23,14 @@ namespace CountingBot.Modules
         [Alias("get-count")]
         public async Task GetCountAsync(SocketGuildUser user)
         {
-            int count = await GetUserCountAsync(user);
+            Task<int> count = GetUserCountAsync(user);
 
             List<(SocketGuildUser user, int count)> userCounts = await GetAllUserCountsAsync(Context.Guild);
-            int userRank = 1 + userCounts.IndexOf((user, count));
+            int userRank = 1 + userCounts.IndexOf((user, await count));
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(SecurityInfo.botColor)
-                .WithDescription($"{user.Mention} has sent {count} messages in the counting channel.\n" +
+                .WithDescription($"{user.Mention} has sent {await count} messages in the counting channel.\n" +
                     $"Rank: {userRank}");
 
             await Context.Channel.SendMessageAsync(embed: embed.Build());

@@ -74,9 +74,9 @@ namespace CountingBot
 
             if (channel.Id == (await SetChannel.GetCountingChannelAsync(channel.Guild)).Id)
             {
-                int nextCount = await SetChannel.GetCountAsync(channel.Guild) + 1;
-                int lastUserNum = await GetUserCount.GetLastUserNumAsync(user);
-                if (m.Content != nextCount.ToString() || lastUserNum + 1 == nextCount)
+                Task<int> nextCount = SetChannel.GetCountAsync(channel.Guild).ContinueWith(x => x.Result + 1);
+                Task<int> lastUserNum = GetUserCount.GetLastUserNumAsync(user);
+                if (m.Content != (await nextCount).ToString() || await lastUserNum + 1 == await nextCount)
                 {
                     await msg.DeleteAsync();
                 }
@@ -84,7 +84,7 @@ namespace CountingBot
                 {
                     await Task.WhenAll(
                         SetChannel.IncrementCountAsync(user.Guild),
-                        GetUserCount.IncrementUserCountAsync(user, nextCount)
+                        GetUserCount.IncrementUserCountAsync(user, await nextCount)
                     );
                 } 
             }
