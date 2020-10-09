@@ -82,8 +82,10 @@ namespace CountingBot
                 }
                 else
                 {
-                    await GetUserCount.IncrementUserCountAsync(user, nextCount);
-                    await SetChannel.IncrementCountAsync(user.Guild);
+                    await Task.WhenAll(
+                        SetChannel.IncrementCountAsync(user.Guild),
+                        GetUserCount.IncrementUserCountAsync(user, nextCount)
+                    );
                 } 
             }
         }
