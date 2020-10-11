@@ -7,27 +7,27 @@ namespace CountingBot.Databases
 {
     public class CountingDatabase
     {
-        private readonly SqliteConnection cnCounting = new SqliteConnection("Filename=Counting.db");
+        private readonly SqliteConnection connection = new SqliteConnection("Filename=Counting.db");
 
         public readonly ChannelsTable Channels;
         public readonly UserCountsTable UserCounts;
 
         public CountingDatabase()
         {
-            Channels = new ChannelsTable(cnCounting);
-            UserCounts = new UserCountsTable(cnCounting);
+            Channels = new ChannelsTable(connection);
+            UserCounts = new UserCountsTable(connection);
         }
 
         public async Task InitAsync()
         {
-            await cnCounting.OpenAsync();
+            await connection.OpenAsync();
 
             List<Task> cmds = new List<Task>();
-            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL, count INTEGER NOT NULL);", cnCounting))
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL, count INTEGER NOT NULL);", connection))
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }
-            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT NOT NULL, user_id TEXT NOT NULL, count INTEGER NOT NULL, last_num INTEGER NOT NULL);", cnCounting))
+            using (SqliteCommand cmd = new SqliteCommand("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT NOT NULL, user_id TEXT NOT NULL, count INTEGER NOT NULL, last_num INTEGER NOT NULL);", connection))
             {
                 cmds.Add(cmd.ExecuteNonQueryAsync());
             }
@@ -35,20 +35,20 @@ namespace CountingBot.Databases
             await Task.WhenAll(cmds);
         }
 
-        public async Task CloseAsync() => await cnCounting.CloseAsync();
+        public async Task CloseAsync() => await connection.CloseAsync();
 
         public class ChannelsTable
         {
-            private readonly SqliteConnection cnCounting;
+            private readonly SqliteConnection connection;
 
-            public ChannelsTable(SqliteConnection cnCounting) => this.cnCounting = cnCounting;
+            public ChannelsTable(SqliteConnection connection) => this.connection = connection;
 
             public async Task<SocketTextChannel> GetCountingChannelAsync(SocketGuild g)
             {
                 SocketTextChannel channel = null;
 
                 string getChannel = "SELECT channel_id FROM Channels WHERE guild_id = @guild_id;";
-                using (SqliteCommand cmd = new SqliteCommand(getChannel, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(getChannel, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
@@ -69,7 +69,7 @@ namespace CountingBot.Databases
                 string update = "UPDATE Channels SET channel_id = @channel_id WHERE guild_id = @guild_id;";
                 string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 0 WHERE (SELECT Changes() = 0);";
 
-                using (SqliteCommand cmd = new SqliteCommand(update + insert, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(update + insert, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", channel.Guild.Id.ToString());
                     cmd.Parameters.AddWithValue("@channel_id", channel.Id.ToString());
@@ -80,7 +80,7 @@ namespace CountingBot.Databases
             public async Task RemoveCountingChannelAsync(SocketGuild g)
             {
                 string delete = "DELETE FROM Channels WHERE guild_id = @guild_id;";
-                using (SqliteCommand cmd = new SqliteCommand(delete, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(delete, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
                     await cmd.ExecuteNonQueryAsync();
@@ -92,7 +92,7 @@ namespace CountingBot.Databases
                 int count = 0;
 
                 string getCount = "SELECT count FROM Channels WHERE guild_id = @guild_id;";
-                using (SqliteCommand cmd = new SqliteCommand(getCount, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(getCount, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
@@ -112,7 +112,7 @@ namespace CountingBot.Databases
                 string update = "UPDATE Channels SET count = count + 1 WHERE guild_id = @guild_id;";
                 string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 1 WHERE (SELECT Changes() = 0);";
 
-                using (SqliteCommand cmd = new SqliteCommand(update + insert, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(update + insert, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
                     await cmd.ExecuteNonQueryAsync();
@@ -122,16 +122,16 @@ namespace CountingBot.Databases
 
         public class UserCountsTable
         {
-            private readonly SqliteConnection cnCounting;
+            private readonly SqliteConnection connection;
 
-            public UserCountsTable(SqliteConnection cnCounting) => this.cnCounting = cnCounting;
+            public UserCountsTable(SqliteConnection connection) => this.connection = connection;
 
             public async Task<int> GetUserCountAsync(SocketGuildUser u)
             {
                 int count = 0;
 
                 string getUserCount = "SELECT count FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
-                using (SqliteCommand cmd = new SqliteCommand(getUserCount, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(getUserCount, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                     cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
@@ -152,7 +152,7 @@ namespace CountingBot.Databases
                 List<(SocketGuildUser user, int count)> userCounts = new List<(SocketGuildUser user, int count)>();
 
                 string getUserCounts = "SELECT user_id, count FROM UserCounts WHERE guild_id = @guild_id;";
-                using (SqliteCommand cmd = new SqliteCommand(getUserCounts, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(getUserCounts, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
@@ -180,7 +180,7 @@ namespace CountingBot.Databases
                 int num = -1;
 
                 string getUserNum = "SELECT last_num FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
-                using (SqliteCommand cmd = new SqliteCommand(getUserNum, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(getUserNum, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                     cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
@@ -201,7 +201,7 @@ namespace CountingBot.Databases
                 string update = "UPDATE UserCounts SET count = count + 1, last_num = @num WHERE guild_id = @guild_id AND user_id = @user_id;";
                 string insert = "INSERT INTO UserCounts (guild_id, user_id, count, last_num) SELECT @guild_id, @user_id, 1, @num WHERE (SELECT Changes() = 0);";
 
-                using (SqliteCommand cmd = new SqliteCommand(update + insert, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(update + insert, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                     cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
@@ -213,7 +213,7 @@ namespace CountingBot.Databases
             public async Task ResetUserCountAsync(SocketGuildUser u)
             {
                 string delete = "DELETE FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
-                using (SqliteCommand cmd = new SqliteCommand(delete, cnCounting))
+                using (SqliteCommand cmd = new SqliteCommand(delete, connection))
                 {
                     cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
                     cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
