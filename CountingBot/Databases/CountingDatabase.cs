@@ -7,7 +7,7 @@ namespace CountingBot.Databases
 {
     public class CountingDatabase
     {
-        private readonly SqliteConnection cnCounting = new SqliteConnection("Filename=Database.db");
+        private readonly SqliteConnection cnCounting = new SqliteConnection("Filename=Counting.db");
 
         public readonly ChannelsTable Channels;
         public readonly UserCountsTable UserCounts;

@@ -5,7 +5,7 @@ namespace CountingBot
 {
     public static class DatabaseManager
     {
-        public static readonly CountingDatabase countingDatabase;
+        public static readonly CountingDatabase countingDatabase = new CountingDatabase();
 
         public static async Task InitAsync()
         {
