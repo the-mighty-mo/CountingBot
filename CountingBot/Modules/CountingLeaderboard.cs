@@ -4,6 +4,7 @@ using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
@@ -12,7 +13,7 @@ namespace CountingBot.Modules
         [Command("counter")]
         public async Task CountingLeaderboardAsync()
         {
-            List<(SocketGuildUser user, int count)> userCounts = await GetUserCount.GetAllUserCountsAsync(Context.Guild);
+            List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
             List<(SocketGuildUser user, int count)> topFive = userCounts.Take(5).ToList();
 
             string leaderboard = "";

@@ -1,6 +1,7 @@
 ﻿using Discord;
 using Discord.Commands;
 using System.Threading.Tasks;
+using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
@@ -10,7 +11,7 @@ namespace CountingBot.Modules
         [Alias("current-count")]
         public async Task CurrentCountAsync()
         {
-            int count = await SetChannel.GetCountAsync(Context.Guild);
+            int count = await countingDatabase.Channels.GetCountAsync(Context.Guild);
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(SecurityInfo.botColor)
