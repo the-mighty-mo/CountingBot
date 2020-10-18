@@ -26,7 +26,9 @@ namespace CountingBot.Modules
                 .WithIsInline(false)
                 .WithName("Commands")
                 .WithValue(
-                    "getcount [user id (optional)]\n" +
+                    "setchannel [channel mention/channel ID]\n" +
+                    "  - Sets the counting channel\n\n" +
+                    "getcount [user mention/user ID (optional)]\n" +
                     "  - Gets the number of counting messages sent by the user and their rank on the leaderboard\n\n" +
                     "counter\n" +
                     "  - Gets a leaderboard of the top 5 users\n\n" +
