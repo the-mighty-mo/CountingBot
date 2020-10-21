@@ -16,14 +16,22 @@ namespace CountingBot.Modules
         {
             if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == null)
             {
-                await Context.Channel.SendMessageAsync("You already do not have a channel set.");
+                EmbedBuilder emb = new EmbedBuilder()
+                    .WithColor(SecurityInfo.botColor)
+                    .WithDescription("You already do not have a channel set.");
+
+                await Context.Channel.SendMessageAsync(embed: emb.Build());
                 return;
             }
+
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(SecurityInfo.botColor)
+                .WithDescription("Counting messages will no longer be managed.");
 
             await Task.WhenAll
             (
                 countingDatabase.Channels.RemoveCountingChannelAsync(Context.Guild),
-                Context.Channel.SendMessageAsync("Counting messages will no longer be managed.")
+                Context.Channel.SendMessageAsync(embed: embed.Build())
             );
         }
 
@@ -35,14 +43,22 @@ namespace CountingBot.Modules
         {
             if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == channel)
             {
-                await Context.Channel.SendMessageAsync($"{channel.Mention} is already configured for counting messages.");
+                EmbedBuilder emb = new EmbedBuilder()
+                    .WithColor(SecurityInfo.botColor)
+                    .WithDescription($"{channel.Mention} is already configured for counting messages.");
+
+                await Context.Channel.SendMessageAsync(embed: emb.Build());
                 return;
             }
+
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(SecurityInfo.botColor)
+                .WithDescription($"Counting messages will now be managed in {channel.Mention}.");
 
             await Task.WhenAll
             (
                 countingDatabase.Channels.SetCountingChannelAsync(channel),
-                Context.Channel.SendMessageAsync($"Counting messages will now be managed in {channel.Mention}.")
+                Context.Channel.SendMessageAsync(embed: embed.Build())
             );
         }
 

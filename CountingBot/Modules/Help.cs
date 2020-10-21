@@ -11,8 +11,7 @@ namespace CountingBot.Modules
         {
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(SecurityInfo.botColor)
-                .WithTitle(SecurityInfo.botName)
-                .WithCurrentTimestamp();
+                .WithTitle(SecurityInfo.botName);
 
             EmbedFieldBuilder prefix = new EmbedFieldBuilder()
                 .WithIsInline(false)
