@@ -26,6 +26,8 @@ namespace CountingBot.Modules
                 .WithIsInline(false)
                 .WithName("Commands")
                 .WithValue(
+                    "ping\n" +
+                    "  - Returns the bot's Server and API latencies\n\n" +
                     "setchannel [channel mention/channel ID]\n" +
                     "  - Sets the counting channel\n\n" +
                     "getcount [user mention/user ID (optional)]\n" +
