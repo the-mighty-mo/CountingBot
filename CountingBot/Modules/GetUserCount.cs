@@ -40,6 +40,12 @@ namespace CountingBot.Modules
                 .WithDescription($"{user.Mention} has sent {await count} messages in the counting channel.\n" +
                     $"Rank: {rankString}");
 
+            if (rank > 1)
+            {
+                int countAbove = userCounts[rank - 2].count;
+                embed.Description += $"\nUntil next: {countAbove - await count}";
+            }
+
             await Context.Channel.SendMessageAsync(embed: embed.Build());
         }
     }
