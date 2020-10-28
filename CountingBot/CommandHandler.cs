@@ -1,5 +1,4 @@
-﻿using CountingBot.Modules;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
 using System;
