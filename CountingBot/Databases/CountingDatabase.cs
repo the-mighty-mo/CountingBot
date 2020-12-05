@@ -55,7 +55,7 @@ namespace CountingBot.Databases
                     SqliteDataReader reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        ulong.TryParse(reader["channel_id"].ToString(), out ulong channelID);
+                        _ = ulong.TryParse(reader["channel_id"].ToString(), out ulong channelID);
                         channel = g.GetTextChannel(channelID);
                     }
                     reader.Close();
@@ -99,7 +99,7 @@ namespace CountingBot.Databases
                     SqliteDataReader reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        int.TryParse(reader["count"].ToString(), out count);
+                        _ = int.TryParse(reader["count"].ToString(), out count);
                     }
                     reader.Close();
                 }
@@ -139,7 +139,7 @@ namespace CountingBot.Databases
                     SqliteDataReader reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        int.TryParse(reader["count"].ToString(), out count);
+                        _ = int.TryParse(reader["count"].ToString(), out count);
                     }
                     reader.Close();
                 }
@@ -159,8 +159,8 @@ namespace CountingBot.Databases
                     SqliteDataReader reader = await cmd.ExecuteReaderAsync();
                     while (await reader.ReadAsync())
                     {
-                        ulong.TryParse(reader["user_id"].ToString(), out ulong userId);
-                        int.TryParse(reader["count"].ToString(), out int count);
+                        _ = ulong.TryParse(reader["user_id"].ToString(), out ulong userId);
+                        _ = int.TryParse(reader["count"].ToString(), out int count);
 
                         SocketGuildUser user = g.GetUser(userId);
                         if (user != null)
@@ -188,7 +188,7 @@ namespace CountingBot.Databases
                     SqliteDataReader reader = await cmd.ExecuteReaderAsync();
                     if (await reader.ReadAsync())
                     {
-                        int.TryParse(reader["last_num"].ToString(), out num);
+                        _ = int.TryParse(reader["last_num"].ToString(), out num);
                     }
                     reader.Close();
                 }

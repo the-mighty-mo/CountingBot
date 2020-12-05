@@ -1,5 +1,5 @@
-﻿using System.Threading.Tasks;
-using CountingBot.Databases;
+﻿using CountingBot.Databases;
+using System.Threading.Tasks;
 
 namespace CountingBot
 {

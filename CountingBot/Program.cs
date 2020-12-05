@@ -3,7 +3,6 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace CountingBot
@@ -18,7 +17,7 @@ namespace CountingBot
 
         public static async Task Main()
         {
-            static bool isRunning() => Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Count() > 1;
+            static bool isRunning() => Process.GetProcessesByName(Process.GetCurrentProcess().ProcessName).Length > 1;
             if (isRunning())
             {
                 await Task.Delay(1000);

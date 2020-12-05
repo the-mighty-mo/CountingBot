@@ -12,7 +12,7 @@ namespace CountingBot
     public class CommandHandler
     {
         public const string prefix = "\\";
-        public static int argPos = 0;
+        private static int argPos = 0;
 
         private readonly DiscordSocketClient client;
         private readonly CommandService commands;
@@ -61,7 +61,7 @@ namespace CountingBot
 
         private async Task HandleCountingAsync(SocketMessage m)
         {
-            if (!(m is SocketUserMessage msg) || !(msg.Channel is SocketTextChannel channel) || !(m.Author is SocketGuildUser user))
+            if (m is not SocketUserMessage msg || msg.Channel is not SocketTextChannel channel || m.Author is not SocketGuildUser user)
             {
                 return;
             }
@@ -80,16 +80,17 @@ namespace CountingBot
                         countingDatabase.Channels.IncrementCountAsync(user.Guild),
                         countingDatabase.UserCounts.IncrementUserCountAsync(user, await nextCount)
                     );
-                } 
+                }
             }
         }
 
         private async Task<bool> CanBotRunCommandsAsync(SocketUserMessage msg) => await Task.Run(() => msg.Author.Id == client.CurrentUser.Id);
+
         private async Task<bool> ShouldDeleteBotCommands() => await Task.Run(() => true);
 
         private async Task HandleCommandAsync(SocketMessage m)
         {
-            if (!(m is SocketUserMessage msg) || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg)))
+            if (m is not SocketUserMessage msg || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg)))
             {
                 return;
             }
