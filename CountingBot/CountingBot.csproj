@@ -9,7 +9,7 @@
     <Company>Josedolf Staller Enterprises</Company>
     <Product>Counting Bot</Product>
     <Description>Keeps track of a counting channel and who has said how many numbers</Description>
-    <Copyright>Copyright © The Mighty Mi® 2020</Copyright>
+    <Copyright>Copyright © The Mighty Mi® 2021</Copyright>
     <ApplicationIcon>CountingBot.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -23,7 +23,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.2.0" />
+    <PackageReference Include="Discord.Net" Version="2.3.0" />
     <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
   </ItemGroup>
