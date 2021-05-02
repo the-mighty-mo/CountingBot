@@ -14,7 +14,7 @@ namespace CountingBot.Modules
         public async Task CountingLeaderboardAsync()
         {
             List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
-            List<(SocketGuildUser user, int count)> topFive = userCounts.Take(5).ToList();
+            IEnumerable<(SocketGuildUser user, int count)> topFive = userCounts.Take(5);
 
             string leaderboard = "";
             int rank = 1;
