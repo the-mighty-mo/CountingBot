@@ -7,8 +7,8 @@ namespace CountingBot.Databases
 {
     public class CountingDatabase
     {
-        private readonly SqliteConnection connection = new SqliteConnection("Filename=Counting.db");
-        private readonly Dictionary<System.Type, ITable> tables = new Dictionary<System.Type, ITable>();
+        private readonly SqliteConnection connection = new("Filename=Counting.db");
+        private readonly Dictionary<System.Type, ITable> tables = new();
 
         public ChannelsTable Channels => tables[typeof(ChannelsTable)] as ChannelsTable;
         public UserCountsTable UserCounts => tables[typeof(UserCountsTable)] as UserCountsTable;
