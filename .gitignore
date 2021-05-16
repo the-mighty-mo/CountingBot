@@ -1,4 +1,4 @@
-CountingBot/bin/
-CountingBot/obj/
+**/bin/
+**/obj/
 .vs/
-*.user
+**.user
