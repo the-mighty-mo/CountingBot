@@ -1,7 +1,7 @@
 # Counting Bot
 
 [![CodeFactor](https://www.codefactor.io/repository/github/the-mighty-mo/countingbot/badge)](https://www.codefactor.io/repository/github/the-mighty-mo/countingbot)
-[![Build Status](https://hallb1016.visualstudio.com/FBIBot/_apis/build/status/the-mighty-mo.CountingBot?branchName=master)](https://hallb1016.visualstudio.com/FBIBot/_build/latest?definitionId=11&branchName=master)
+[![.NET Build](https://github.com/the-mighty-mo/CountingBot/actions/workflows/dotnet.yml/badge.svg)](https://github.com/the-mighty-mo/CountingBot/actions/workflows/dotnet.yml)
 
 Counting Bot - Version 1.0
 
