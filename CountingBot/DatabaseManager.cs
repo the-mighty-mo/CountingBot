@@ -7,13 +7,13 @@ namespace CountingBot
     {
         public static readonly CountingDatabase countingDatabase = new();
 
-        public static async Task InitAsync() =>
-            await Task.WhenAll(
+        public static Task InitAsync() =>
+            Task.WhenAll(
                 countingDatabase.InitAsync()
             );
 
-        public static async Task CloseAsync() =>
-            await Task.WhenAll(
+        public static Task CloseAsync() =>
+            Task.WhenAll(
                 countingDatabase.CloseAsync()
             );
     }
