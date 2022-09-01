@@ -1,18 +1,30 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using System.Threading.Tasks;
 using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
-    public class SetChannel : ModuleBase<SocketCommandContext>
+    public class SetChannel : InteractionModuleBase<SocketInteractionContext>
     {
-        [Command("setchannel")]
-        [Alias("set-channel")]
+
+        [SlashCommand("set-channel", "Sets the counting channel")]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task SetChannelAsync()
+        public async Task SetChannelAsync(SocketTextChannel channel = null)
+        {
+            if (channel is null)
+            {
+                await SetChannelPrivAsync();
+            }
+            else
+            {
+                await SetChannelPrivAsync(channel);
+            }
+        }
+
+        public async Task SetChannelPrivAsync()
         {
             if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == null)
             {
@@ -20,7 +32,7 @@ namespace CountingBot.Modules
                     .WithColor(SecurityInfo.botColor)
                     .WithDescription("You already do not have a channel set.");
 
-                await Context.Channel.SendMessageAsync(embed: emb.Build());
+                await Context.Interaction.RespondAsync(embed: emb.Build());
                 return;
             }
 
@@ -31,15 +43,11 @@ namespace CountingBot.Modules
             await Task.WhenAll
             (
                 countingDatabase.Channels.RemoveCountingChannelAsync(Context.Guild),
-                Context.Channel.SendMessageAsync(embed: embed.Build())
+                Context.Interaction.RespondAsync(embed: embed.Build())
             );
         }
 
-        [Command("setchannel")]
-        [Alias("set-channel")]
-        [RequireBotPermission(ChannelPermission.ManageMessages)]
-        [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task SetChannelAsync(SocketTextChannel channel)
+        public async Task SetChannelPrivAsync(SocketTextChannel channel)
         {
             if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == channel)
             {
@@ -47,7 +55,7 @@ namespace CountingBot.Modules
                     .WithColor(SecurityInfo.botColor)
                     .WithDescription($"{channel.Mention} is already configured for counting messages.");
 
-                await Context.Channel.SendMessageAsync(embed: emb.Build());
+                await Context.Interaction.RespondAsync(embed: emb.Build());
                 return;
             }
 
@@ -58,23 +66,8 @@ namespace CountingBot.Modules
             await Task.WhenAll
             (
                 countingDatabase.Channels.SetCountingChannelAsync(channel),
-                Context.Channel.SendMessageAsync(embed: embed.Build())
+                Context.Interaction.RespondAsync(embed: embed.Build())
             );
-        }
-
-        [Command("setchannel")]
-        [Alias("set-channel")]
-        [RequireBotPermission(ChannelPermission.ManageMessages)]
-        [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task SetChannelAsync(string channel)
-        {
-            SocketTextChannel c;
-            if (ulong.TryParse(channel, out ulong channelID) && (c = Context.Guild.GetTextChannel(channelID)) != null)
-            {
-                await SetChannelAsync(c);
-                return;
-            }
-            await Context.Channel.SendMessageAsync("Error: the given text channel does not exist.");
         }
     }
 }

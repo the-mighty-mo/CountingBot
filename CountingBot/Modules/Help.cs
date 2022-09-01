@@ -1,12 +1,12 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 
 namespace CountingBot.Modules
 {
-    public class Help : ModuleBase<SocketCommandContext>
+    public class Help : InteractionModuleBase<SocketInteractionContext>
     {
-        [Command("help")]
+        [SlashCommand("help", "List of commands")]
         public async Task HelpAsync()
         {
             EmbedBuilder embed = new EmbedBuilder()
@@ -27,18 +27,18 @@ namespace CountingBot.Modules
                 .WithValue(
                     "ping\n" +
                     "  - Returns the bot's Server and API latencies\n\n" +
-                    "setchannel [channel mention/channel ID]\n" +
+                    "set-channel [channel]\n" +
                     "  - Sets the counting channel\n\n" +
-                    "getcount [user mention/user ID (optional)]\n" +
+                    "get-count [user (optional)]\n" +
                     "  - Gets the number of counting messages sent by the user and their rank on the leaderboard\n\n" +
                     "counter\n" +
                     "  - Gets a leaderboard of the top 5 users\n\n" +
-                    "currentcount\n" +
+                    "current-count\n" +
                     "  - Gets the current counter value"
                 );
             embed.AddField(field);
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build());
         }
     }
 }

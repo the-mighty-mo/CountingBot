@@ -1,14 +1,13 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using System.Threading.Tasks;
 using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
-    public class CurrentCount : ModuleBase<SocketCommandContext>
+    public class CurrentCount : InteractionModuleBase<SocketInteractionContext>
     {
-        [Command("currentcount")]
-        [Alias("current-count")]
+        [SlashCommand("current-count", "Gets the current counter value")]
         public async Task CurrentCountAsync()
         {
             int count = await countingDatabase.Channels.GetCountAsync(Context.Guild);
@@ -19,7 +18,7 @@ namespace CountingBot.Modules
                 .WithDescription($"The counter is at {count}.\n" +
                     $"Looking for: {count + 1}");
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build());
         }
     }
 }

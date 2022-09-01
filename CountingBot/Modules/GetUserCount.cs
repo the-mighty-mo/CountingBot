@@ -1,5 +1,5 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -7,22 +7,23 @@ using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
-    public class GetUserCount : ModuleBase<SocketCommandContext>
+    public class GetUserCount : InteractionModuleBase<SocketInteractionContext>
     {
-        [Command("getcount")]
-        [Alias("get-count")]
-        public async Task GetCountAsync()
+        [SlashCommand("get-count", "Gets the number of counting messages sent by the user and their rank on the leaderboard")]
+        public async Task GetCountAsync(SocketGuildUser user = null)
         {
-            if (Context.User is SocketGuildUser user)
+            if (user is null)
             {
-                await GetCountAsync(user);
+                if (Context.User is SocketGuildUser u)
+                {
+                    user = u;
+                }
+                else
+                {
+                    return;
+                }
             }
-        }
 
-        [Command("getcount")]
-        [Alias("get-count")]
-        public async Task GetCountAsync(SocketGuildUser user)
-        {
             Task<int> count = countingDatabase.UserCounts.GetUserCountAsync(user);
 
             List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
@@ -46,7 +47,7 @@ namespace CountingBot.Modules
                 embed.Description += $"\nUntil next: {countAbove - await count}";
             }
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build());
         }
     }
 }

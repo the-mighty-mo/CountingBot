@@ -1,5 +1,5 @@
 ﻿using Discord;
-using Discord.Commands;
+using Discord.Interactions;
 using Discord.WebSocket;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +8,9 @@ using static CountingBot.DatabaseManager;
 
 namespace CountingBot.Modules
 {
-    public class CountingLeaderboard : ModuleBase<SocketCommandContext>
+    public class CountingLeaderboard : InteractionModuleBase<SocketInteractionContext>
     {
-        [Command("counter")]
+        [SlashCommand("counter", "Gets a leaderboard of the top 5 users")]
         public async Task CountingLeaderboardAsync()
         {
             List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
@@ -46,7 +46,7 @@ namespace CountingBot.Modules
                 .WithValue(leaderboard);
             embed.AddField(field);
 
-            await Context.Channel.SendMessageAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build());
         }
     }
 }
