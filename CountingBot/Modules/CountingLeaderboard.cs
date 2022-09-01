@@ -11,6 +11,7 @@ namespace CountingBot.Modules
     public class CountingLeaderboard : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("counter", "Gets a leaderboard of the top 5 users")]
+        [RequireContext(ContextType.Guild)]
         public async Task CountingLeaderboardAsync()
         {
             List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);

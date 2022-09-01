@@ -8,6 +8,7 @@ namespace CountingBot.Modules
     public class CurrentCount : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("current-count", "Gets the current counter value")]
+        [RequireContext(ContextType.Guild)]
         public async Task CurrentCountAsync()
         {
             int count = await countingDatabase.Channels.GetCountAsync(Context.Guild);

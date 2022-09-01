@@ -10,6 +10,7 @@ namespace CountingBot.Modules
     {
 
         [SlashCommand("set-channel", "Sets the counting channel")]
+        [RequireContext(ContextType.Guild)]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         [RequireUserPermission(GuildPermission.ManageGuild)]
         public async Task SetChannelAsync(SocketTextChannel channel = null)

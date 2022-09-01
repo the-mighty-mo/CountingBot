@@ -10,6 +10,7 @@ namespace CountingBot.Modules
     public class GetUserCount : InteractionModuleBase<SocketInteractionContext>
     {
         [SlashCommand("get-count", "Gets the number of counting messages sent by the user and their rank on the leaderboard")]
+        [RequireContext(ContextType.Guild)]
         public async Task GetCountAsync(SocketGuildUser user = null)
         {
             if (user is null)
