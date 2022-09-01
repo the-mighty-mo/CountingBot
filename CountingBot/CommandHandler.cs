@@ -107,13 +107,13 @@ namespace CountingBot
             }
         }
 
-        private Task<bool> CanBotRunCommandsAsync(SocketUserMessage msg) => Task.Run(() => msg.Author.Id == client.CurrentUser.Id);
+        private Task<bool> CanBotRunCommandsAsync(SocketUser usr) => Task.Run(() => usr.Id == client.CurrentUser.Id);
 
-        private Task<bool> ShouldDeleteBotCommands() => Task.Run(() => true);
+        private static Task<bool> ShouldDeleteBotCommands() => Task.Run(() => true);
 
         private async Task HandleSlashCommandAsync(SocketSlashCommand m)
         {
-            if (m.User.IsBot && !await CanBotRunCommandsAsync(null))
+            if (m.User.IsBot && !await CanBotRunCommandsAsync(m.User))
             {
                 return;
             }
@@ -137,7 +137,7 @@ namespace CountingBot
 
         private async Task HandleCommandAsync(SocketMessage m)
         {
-            if (m is not SocketUserMessage msg || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg)))
+            if (m is not SocketUserMessage msg || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg.Author)))
             {
                 return;
             }
