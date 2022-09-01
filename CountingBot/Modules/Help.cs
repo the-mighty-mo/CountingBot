@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.Interactions;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace CountingBot.Modules
@@ -13,13 +14,7 @@ namespace CountingBot.Modules
                 .WithColor(SecurityInfo.botColor)
                 .WithTitle(SecurityInfo.botName);
 
-            EmbedFieldBuilder prefix = new EmbedFieldBuilder()
-                .WithIsInline(false)
-                .WithName("Prefix")
-                .WithValue("\\" +
-                    "\n**or**\n" +
-                    Context.Client.CurrentUser.Mention + "\n\u200b");
-            embed.AddField(prefix);
+            List<EmbedFieldBuilder> fields = new();
 
             EmbedFieldBuilder field = new EmbedFieldBuilder()
                 .WithIsInline(false)
@@ -36,9 +31,10 @@ namespace CountingBot.Modules
                     "current-count\n" +
                     "  - Gets the current counter value"
                 );
-            embed.AddField(field);
+            fields.Add(field);
+            embed.WithFields(fields);
 
-            await Context.Interaction.RespondAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build(), ephemeral: true);
         }
     }
 }
