@@ -8,7 +8,6 @@ namespace CountingBot.Modules
 {
     public class SetChannel : InteractionModuleBase<SocketInteractionContext>
     {
-
         [SlashCommand("set-channel", "Sets the counting channel")]
         [RequireContext(ContextType.Guild)]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
