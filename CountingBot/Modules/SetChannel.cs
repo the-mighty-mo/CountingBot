@@ -12,9 +12,9 @@ namespace CountingBot.Modules
         [RequireContext(ContextType.Guild)]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task SetChannelAsync(SocketTextChannel channel = null)
+        public async Task SetChannelAsync(SocketTextChannel? channel = null)
         {
-            if (channel is null)
+            if (channel == null)
             {
                 await SetChannelPrivAsync();
             }

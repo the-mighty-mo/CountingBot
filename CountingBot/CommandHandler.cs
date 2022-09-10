@@ -96,7 +96,7 @@ namespace CountingBot
                 return;
             }
 
-            if (channel.Id == (await countingDatabase.Channels.GetCountingChannelAsync(channel.Guild)).Id)
+            if (channel.Id == (await countingDatabase.Channels.GetCountingChannelAsync(channel.Guild))?.Id)
             {
                 Task<int> nextCount = countingDatabase.Channels.GetCountAsync(channel.Guild).ContinueWith(x => x.Result + 1);
                 Task<int> lastUserNum = countingDatabase.UserCounts.GetLastUserNumAsync(user);

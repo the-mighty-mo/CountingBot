@@ -16,9 +16,9 @@ namespace CountingBot.Databases.CountingDatabaseTables
             return cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<SocketTextChannel> GetCountingChannelAsync(SocketGuild g)
+        public async Task<SocketTextChannel?> GetCountingChannelAsync(SocketGuild g)
         {
-            SocketTextChannel channel = null;
+            SocketTextChannel? channel = null;
 
             string getChannel = "SELECT channel_id FROM Channels WHERE guild_id = @guild_id;";
 
