@@ -14,7 +14,7 @@ namespace CountingBot.Modules
         [RequireContext(ContextType.Guild)]
         public async Task CountingLeaderboardAsync()
         {
-            List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
+            List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild).ConfigureAwait(false);
             IEnumerable<(SocketGuildUser user, int count)> topFive = userCounts.Take(5);
 
             string leaderboard = "";
@@ -47,7 +47,7 @@ namespace CountingBot.Modules
                 .WithValue(leaderboard);
             embed.AddField(field);
 
-            await Context.Interaction.RespondAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
         }
     }
 }

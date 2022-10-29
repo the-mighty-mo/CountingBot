@@ -28,10 +28,13 @@ namespace CountingBot.Modules
                 }
             }
 
-            Task<int> count = countingDatabase.UserCounts.GetUserCountAsync(user);
+            Task<int> countTask = countingDatabase.UserCounts.GetUserCountAsync(user);
+            int count;
 
-            List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild);
-            int rank = 1 + userCounts.IndexOf((user, await count));
+            List<(SocketGuildUser user, int count)> userCounts = await countingDatabase.UserCounts.GetAllUserCountsAsync(Context.Guild).ConfigureAwait(false);
+            count = await countTask.ConfigureAwait(false);
+
+            int rank = 1 + userCounts.IndexOf((user, count));
             string rankString = rank switch
             {
                 1 => ":first_place:",
@@ -42,16 +45,16 @@ namespace CountingBot.Modules
 
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(SecurityInfo.botColor)
-                .WithDescription($"{user.Mention} has sent {await count} messages in the counting channel.\n" +
+                .WithDescription($"{user.Mention} has sent {count} messages in the counting channel.\n" +
                     $"Rank: {rankString}");
 
             if (rank > 1)
             {
                 int countAbove = userCounts[rank - 2].count;
-                embed.Description += $"\nUntil next: {countAbove - await count}";
+                embed.Description += $"\nUntil next: {countAbove - count}";
             }
 
-            await Context.Interaction.RespondAsync(embed: embed.Build());
+            await Context.Interaction.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
         }
     }
 }

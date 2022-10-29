@@ -27,8 +27,8 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
 
-            SqliteDataReader reader = await cmd.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            SqliteDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+            if (await reader.ReadAsync().ConfigureAwait(false))
             {
                 _ = int.TryParse(reader["count"].ToString(), out count);
             }
@@ -46,8 +46,8 @@ namespace CountingBot.Databases.CountingDatabaseTables
             using SqliteCommand cmd = new(getUserCounts, connection);
             cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
-            SqliteDataReader reader = await cmd.ExecuteReaderAsync();
-            while (await reader.ReadAsync())
+            SqliteDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+            while (await reader.ReadAsync().ConfigureAwait(false))
             {
                 _ = ulong.TryParse(reader["user_id"].ToString(), out ulong userId);
                 _ = int.TryParse(reader["count"].ToString(), out int count);
@@ -74,8 +74,8 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
 
-            SqliteDataReader reader = await cmd.ExecuteReaderAsync();
-            if (await reader.ReadAsync())
+            SqliteDataReader reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false);
+            if (await reader.ReadAsync().ConfigureAwait(false))
             {
                 _ = int.TryParse(reader["last_num"].ToString(), out num);
             }
@@ -84,7 +84,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             return num;
         }
 
-        public async Task IncrementUserCountAsync(SocketGuildUser u, int num)
+        public Task IncrementUserCountAsync(SocketGuildUser u, int num)
         {
             string update = "UPDATE UserCounts SET count = count + 1, last_num = @num WHERE guild_id = @guild_id AND user_id = @user_id;";
             string insert = "INSERT INTO UserCounts (guild_id, user_id, count, last_num) SELECT @guild_id, @user_id, 1, @num WHERE (SELECT Changes() = 0);";
@@ -94,10 +94,10 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
             cmd.Parameters.AddWithValue("@num", num);
 
-            await cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task ResetUserCountAsync(SocketGuildUser u)
+        public Task ResetUserCountAsync(SocketGuildUser u)
         {
             string delete = "DELETE FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
 
@@ -105,7 +105,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
 
-            await cmd.ExecuteNonQueryAsync();
+            return cmd.ExecuteNonQueryAsync();
         }
     }
 }

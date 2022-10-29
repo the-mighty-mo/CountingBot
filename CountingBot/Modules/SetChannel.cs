@@ -12,27 +12,18 @@ namespace CountingBot.Modules
         [RequireContext(ContextType.Guild)]
         [RequireBotPermission(ChannelPermission.ManageMessages)]
         [RequireUserPermission(GuildPermission.ManageGuild)]
-        public async Task SetChannelAsync(SocketTextChannel? channel = null)
-        {
-            if (channel == null)
-            {
-                await SetChannelPrivAsync();
-            }
-            else
-            {
-                await SetChannelPrivAsync(channel);
-            }
-        }
+        public Task SetChannelAsync(SocketTextChannel? channel = null) =>
+            channel == null ? SetChannelPrivAsync() : SetChannelPrivAsync(channel);
 
         public async Task SetChannelPrivAsync()
         {
-            if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == null)
+            if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild).ConfigureAwait(false) == null)
             {
                 EmbedBuilder emb = new EmbedBuilder()
                     .WithColor(SecurityInfo.botColor)
                     .WithDescription("You already do not have a channel set.");
 
-                await Context.Interaction.RespondAsync(embed: emb.Build());
+                await Context.Interaction.RespondAsync(embed: emb.Build()).ConfigureAwait(false);
                 return;
             }
 
@@ -44,18 +35,18 @@ namespace CountingBot.Modules
             (
                 countingDatabase.Channels.RemoveCountingChannelAsync(Context.Guild),
                 Context.Interaction.RespondAsync(embed: embed.Build())
-            );
+            ).ConfigureAwait(false);
         }
 
         public async Task SetChannelPrivAsync(SocketTextChannel channel)
         {
-            if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild) == channel)
+            if (await countingDatabase.Channels.GetCountingChannelAsync(Context.Guild).ConfigureAwait(false) == channel)
             {
                 EmbedBuilder emb = new EmbedBuilder()
                     .WithColor(SecurityInfo.botColor)
                     .WithDescription($"{channel.Mention} is already configured for counting messages.");
 
-                await Context.Interaction.RespondAsync(embed: emb.Build());
+                await Context.Interaction.RespondAsync(embed: emb.Build()).ConfigureAwait(false);
                 return;
             }
 
@@ -67,7 +58,7 @@ namespace CountingBot.Modules
             (
                 countingDatabase.Channels.SetCountingChannelAsync(channel),
                 Context.Interaction.RespondAsync(embed: embed.Build())
-            );
+            ).ConfigureAwait(false);
         }
     }
 }

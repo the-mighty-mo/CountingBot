@@ -50,15 +50,13 @@ namespace CountingBot
             await Task.WhenAll(
                 interactions.AddModulesAsync(Assembly.GetEntryAssembly(), services),
                 commands.AddModulesAsync(Assembly.GetEntryAssembly(), services)
-            );
+            ).ConfigureAwait(false);
             interactions.SlashCommandExecuted += SendInteractionErrorAsync;
             commands.CommandExecuted += SendCommandErrorAsync;
         }
 
-        private async Task ReadyAsync()
-        {
-            await interactions.RegisterCommandsGloballyAsync(true);
-        }
+        private Task ReadyAsync() =>
+            interactions.RegisterCommandsGloballyAsync(true);
 
         private async Task SendInteractionErrorAsync(SlashCommandInfo info, IInteractionContext context, Discord.Interactions.IResult result)
         {
@@ -66,11 +64,11 @@ namespace CountingBot
             {
                 if (result.Error is InteractionCommandError.UnmetPrecondition)
                 {
-                    await context.Interaction.RespondAsync($"Error: {result.ErrorReason}");
+                    await context.Interaction.RespondAsync($"Error: {result.ErrorReason}").ConfigureAwait(false);
                 }
                 else
                 {
-                    await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}");
+                    await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}").ConfigureAwait(false);
                 }
             }
         }
@@ -79,7 +77,7 @@ namespace CountingBot
         {
             if (!result.IsSuccess && info.GetValueOrDefault()?.RunMode == Discord.Commands.RunMode.Async && result.Error is not (CommandError.UnknownCommand or CommandError.UnmetPrecondition))
             {
-                await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}");
+                await context.Channel.SendMessageAsync($"Error: {result.ErrorReason}").ConfigureAwait(false);
             }
         }
 
@@ -96,20 +94,20 @@ namespace CountingBot
                 return;
             }
 
-            if (channel.Id == (await countingDatabase.Channels.GetCountingChannelAsync(channel.Guild))?.Id)
+            if (channel.Id == (await countingDatabase.Channels.GetCountingChannelAsync(channel.Guild).ConfigureAwait(false))?.Id)
             {
-                Task<int> nextCount = countingDatabase.Channels.GetCountAsync(channel.Guild).ContinueWith(x => x.Result + 1);
                 Task<int> lastUserNum = countingDatabase.UserCounts.GetLastUserNumAsync(user);
-                if (m.Content != (await nextCount).ToString() || await lastUserNum + 1 == await nextCount)
+                int nextCount = await countingDatabase.Channels.GetCountAsync(channel.Guild) + 1;
+                if (m.Content != nextCount.ToString() || await lastUserNum.ConfigureAwait(false) + 1 == nextCount)
                 {
-                    await msg.DeleteAsync();
+                    await msg.DeleteAsync().ConfigureAwait(false);
                 }
                 else
                 {
                     await Task.WhenAll(
                         countingDatabase.Channels.IncrementCountAsync(user.Guild),
-                        countingDatabase.UserCounts.IncrementUserCountAsync(user, await nextCount)
-                    );
+                        countingDatabase.UserCounts.IncrementUserCountAsync(user, nextCount)
+                    ).ConfigureAwait(false);
                 }
             }
         }
@@ -120,27 +118,27 @@ namespace CountingBot
 
         private async Task HandleSlashCommandAsync(SocketSlashCommand m)
         {
-            if (m.User.IsBot && !await CanBotRunCommandsAsync(m.User))
+            if (m.User.IsBot && !await CanBotRunCommandsAsync(m.User).ConfigureAwait(false))
             {
                 return;
             }
 
             SocketInteractionContext Context = new(client, m);
 
-            await interactions.ExecuteCommandAsync(Context, services);
+            await interactions.ExecuteCommandAsync(Context, services).ConfigureAwait(false);
 
             List<Task> cmds = new();
-            if (m.User.IsBot && await ShouldDeleteBotCommands())
+            if (m.User.IsBot && await ShouldDeleteBotCommands().ConfigureAwait(false))
             {
                 cmds.Add(m.DeleteOriginalResponseAsync());
             }
 
-            await Task.WhenAll(cmds);
+            await Task.WhenAll(cmds).ConfigureAwait(false);
         }
 
         private async Task HandleCommandAsync(SocketMessage m)
         {
-            if (m is not SocketUserMessage msg || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg.Author)))
+            if (m is not SocketUserMessage msg || (msg.Author.IsBot && !await CanBotRunCommandsAsync(msg.Author).ConfigureAwait(false)))
             {
                 return;
             }
@@ -150,10 +148,10 @@ namespace CountingBot
 
             if (isCommand)
             {
-                var result = await commands.ExecuteAsync(Context, argPos, services);
+                var result = await commands.ExecuteAsync(Context, argPos, services).ConfigureAwait(false);
 
                 List<Task> cmds = new();
-                if (msg.Author.IsBot && await ShouldDeleteBotCommands())
+                if (msg.Author.IsBot && await ShouldDeleteBotCommands().ConfigureAwait(false))
                 {
                     cmds.Add(msg.DeleteAsync());
                 }
@@ -162,7 +160,7 @@ namespace CountingBot
                     cmds.Add(Context.Channel.SendMessageAsync(result.ErrorReason));
                 }
 
-                await Task.WhenAll(cmds);
+                await Task.WhenAll(cmds).ConfigureAwait(false);
             }
         }
     }
