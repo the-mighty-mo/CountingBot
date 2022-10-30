@@ -11,10 +11,10 @@ namespace CountingBot.Databases.CountingDatabaseTables
 
         public UserCountsTable(SqliteConnection connection) => this.connection = connection;
 
-        public Task InitAsync()
+        public async Task InitAsync()
         {
             using SqliteCommand cmd = new("CREATE TABLE IF NOT EXISTS UserCounts (guild_id TEXT NOT NULL, user_id TEXT NOT NULL, count INTEGER NOT NULL, last_num INTEGER NOT NULL);", connection);
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         public async Task<int> GetUserCountAsync(SocketGuildUser u)
@@ -84,7 +84,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             return num;
         }
 
-        public Task IncrementUserCountAsync(SocketGuildUser u, int num)
+        public async Task IncrementUserCountAsync(SocketGuildUser u, int num)
         {
             string update = "UPDATE UserCounts SET count = count + 1, last_num = @num WHERE guild_id = @guild_id AND user_id = @user_id;";
             string insert = "INSERT INTO UserCounts (guild_id, user_id, count, last_num) SELECT @guild_id, @user_id, 1, @num WHERE (SELECT Changes() = 0);";
@@ -94,10 +94,10 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
             cmd.Parameters.AddWithValue("@num", num);
 
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
-        public Task ResetUserCountAsync(SocketGuildUser u)
+        public async Task ResetUserCountAsync(SocketGuildUser u)
         {
             string delete = "DELETE FROM UserCounts WHERE guild_id = @guild_id AND user_id = @user_id;";
 
@@ -105,7 +105,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@guild_id", u.Guild.Id.ToString());
             cmd.Parameters.AddWithValue("@user_id", u.Id.ToString());
 
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
     }
 }

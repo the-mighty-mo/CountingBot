@@ -10,10 +10,10 @@ namespace CountingBot.Databases.CountingDatabaseTables
 
         public ChannelsTable(SqliteConnection connection) => this.connection = connection;
 
-        public Task InitAsync()
+        public async Task InitAsync()
         {
             using SqliteCommand cmd = new("CREATE TABLE IF NOT EXISTS Channels (guild_id TEXT PRIMARY KEY, channel_id TEXT NOT NULL, count INTEGER NOT NULL);", connection);
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         public async Task<SocketTextChannel?> GetCountingChannelAsync(SocketGuild g)
@@ -36,7 +36,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             return channel;
         }
 
-        public Task SetCountingChannelAsync(SocketTextChannel channel)
+        public async Task SetCountingChannelAsync(SocketTextChannel channel)
         {
             string update = "UPDATE Channels SET channel_id = @channel_id WHERE guild_id = @guild_id;";
             string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 0 WHERE (SELECT Changes() = 0);";
@@ -45,17 +45,17 @@ namespace CountingBot.Databases.CountingDatabaseTables
             cmd.Parameters.AddWithValue("@guild_id", channel.Guild.Id.ToString());
             cmd.Parameters.AddWithValue("@channel_id", channel.Id.ToString());
 
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
-        public Task RemoveCountingChannelAsync(SocketGuild g)
+        public async Task RemoveCountingChannelAsync(SocketGuild g)
         {
             string delete = "DELETE FROM Channels WHERE guild_id = @guild_id;";
 
             using SqliteCommand cmd = new(delete, connection);
             cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
 
         public async Task<int> GetCountAsync(SocketGuild g)
@@ -77,7 +77,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             return count;
         }
 
-        public Task IncrementCountAsync(SocketGuild g)
+        public async Task IncrementCountAsync(SocketGuild g)
         {
             string update = "UPDATE Channels SET count = count + 1 WHERE guild_id = @guild_id;";
             string insert = "INSERT INTO Channels (guild_id, channel_id, count) SELECT @guild_id, @channel_id, 1 WHERE (SELECT Changes() = 0);";
@@ -85,7 +85,7 @@ namespace CountingBot.Databases.CountingDatabaseTables
             using SqliteCommand cmd = new(update + insert, connection);
             cmd.Parameters.AddWithValue("@guild_id", g.Id.ToString());
 
-            return cmd.ExecuteNonQueryAsync();
+            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
         }
     }
 }
