@@ -5,4 +5,4 @@
 
 Counting Bot - Version 1.0
 
-Created with .NET 6, Discord.Net, and Microsoft.Data.Sqlite
+Created with .NET 7, Discord.Net, and Microsoft.Data.Sqlite
